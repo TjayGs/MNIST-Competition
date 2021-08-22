@@ -1,0 +1,5 @@
+BATCH_SIZE = 'batch_size'
+BATCH_SIZE_TEST = 'batch_size_test'
+EPOCHS = 'epochs'
+LEARNING_RATE = 'learning_rate'
+DEBUG = 'debug'
