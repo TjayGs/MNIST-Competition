@@ -6,10 +6,11 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, random_split
 from yaml import load
 
-import src.YamlConfigConstants as const
+import src.yamlConfigConstants as const
 import src.submissionHelper as submission_helper
-from src.nets.MnistNets import Net
-from src.digitRecognizerImporter import MNISTDataset
+from src.MnistNets import MnistNetV1
+from src.MNISTDataset import MNISTDataset
+from src.validationHelper import AnalyzingHelper
 
 train_file_path = './resources/datasets/digit-recognizer/digit-recognizer/train.csv'
 test_file_path = './resources/datasets/digit-recognizer/digit-recognizer/test.csv'
@@ -42,8 +43,10 @@ def main():
 
     # Creation Phase
     print('Create model and optimizer')
-    model = Net(yaml_config[const.DEBUG])
+    model = MnistNetV1(yaml_config[const.DEBUG])
     optimizer = optim.Adam(model.parameters(), yaml_config[const.LEARNING_RATE])
+    analyzer = AnalyzingHelper(yaml_config[const.SAVE_MODEL],
+                               './resources/output/model.pt')
 
     # Training Phase
     print('Beginning Trainings/Validation Phase')
@@ -67,14 +70,18 @@ def main():
             with torch.no_grad():
                 output = model(local_valid_batch)
                 prediction_score += (torch.max(output, 1)[1].data.squeeze() == local_valid_label).sum().item()
-        print('Prediction Score: {}'.format(prediction_score / len(validation_dataset)))
+        analyzer.handle_precision_score((prediction_score / len(validation_dataset)),
+                                        model=model)
+
+    analyzer.print_current_scores()
 
     # Test Phase
-    model.eval()
+    saved_model = torch.load('./resources/output/model.pt')
+    saved_model.eval()
     prediction_list = []
     for local_valid_batch, local_valid_label in test_dataloader:
         with torch.no_grad():
-            output = model(local_valid_batch)
+            output = saved_model(local_valid_batch)
             prediction_list.append(torch.max(output, 1)[1].numpy()[0])
 
     submission_helper.createSampleSubmissionFile(prediction_list)

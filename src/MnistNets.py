@@ -1,9 +1,9 @@
 import torch.nn as nn
 
 
-class Net(nn.Module):
+class MnistNetV1(nn.Module):
     def __init__(self, debug):
-        super(Net, self).__init__()
+        super(MnistNetV1, self).__init__()
         self.debug = debug
         self.firstTime = True
 
