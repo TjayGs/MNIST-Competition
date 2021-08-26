@@ -3,90 +3,90 @@ from __future__ import print_function
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
-from torch.utils.data import DataLoader, random_split
-from yaml import load
+import configPhase
+import dataLoaderCreationPhase
 
-import src.yamlConfigConstants as const
 import src.submissionHelper as submission_helper
+import src.yamlConfigConstants as const
 from src.MnistNets import MnistNetV1
-from src.MNISTDataset import MNISTDataset
 from src.validationHelper import AnalyzingHelper
-
-train_file_path = './resources/datasets/digit-recognizer/digit-recognizer/train.csv'
-test_file_path = './resources/datasets/digit-recognizer/digit-recognizer/test.csv'
+from src.Stopwatch import Stopwatch
 
 
 def main():
     print("Here we go !")
+    stopwatch = Stopwatch()
+    stopwatch.start('Overall')
     # Configuration Phase
 
-    # Load Config
-    print("Load Config")
-    file_stream = open('resources/config/config.yaml', 'r')
-    yaml_config = load(file_stream)
-    if yaml_config[const.DEBUG]:
-        print('Yaml Config File:')
-        print(yaml_config)
+    # Config Phase
+    print("Config Phase")
+    stopwatch.start('ConfigPhase')
+    yaml_config = configPhase.configPhase()
+    stopwatch.stop('ConfigPhase')
 
-    # Create Datasets and Dataloader
+    # DataLoaderCreationPhase
     print('Start creating datasets and dataloaders')
-    train_dataset = MNISTDataset(train_file_path, with_label=True)
-    train_dataset_size = int(0.8 * train_dataset.__len__())  # TODO make size configureable
-    validation_dataset_size = train_dataset.__len__() - train_dataset_size
+    stopwatch.start('DataLoaderCreationPhase')
+    dataLoader = dataLoaderCreationPhase.dataLoaderCreationPhase(yaml_config=yaml_config)
+    stopwatch.stop('DataLoaderCreationPhase')
 
-    train_dataset, validation_dataset = random_split(train_dataset, [train_dataset_size, validation_dataset_size])
-    train_dataloader = DataLoader(train_dataset, batch_size=yaml_config[const.BATCH_SIZE], shuffle=True)
-    validation_dataloader = DataLoader(validation_dataset, batch_size=yaml_config[const.BATCH_SIZE_TEST], shuffle=True)
-
-    test_dataset = MNISTDataset(test_file_path, with_label=False)
-    test_dataloader = DataLoader(test_dataset, batch_size=yaml_config[const.BATCH_SIZE_TEST])
-
-    # Creation Phase
+    # ModelCreationPhase
     print('Create model and optimizer')
+    stopwatch.start('ModelCreationPhase')
     model = MnistNetV1(yaml_config[const.DEBUG])
     optimizer = optim.Adam(model.parameters(), yaml_config[const.LEARNING_RATE])
     analyzer = AnalyzingHelper(yaml_config[const.SAVE_MODEL],
                                './resources/output/model.pt')
-
+    stopwatch.stop('ModelCreationPhase')
     # Training Phase
     print('Beginning Trainings/Validation Phase')
+    stopwatch.start('TrainingsValidationPhase')
     for x in range(yaml_config[const.EPOCHS]):
+        stopwatch.start('TrainingEpoch{}'.format(x))
         print('Beginning Training in Epoch {}'.format(x + 1))
         model.train()
         epoch_loss = 0
-        for local_batch, local_labels in train_dataloader:
+        for local_batch, local_labels in dataLoader['train']:
             output = model(local_batch)
             loss = F.cross_entropy(output, local_labels)
             epoch_loss += loss
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+        stopwatch.stop('TrainingEpoch{}'.format(x))
 
-        # Verficiation Phase
+        # Verfication Phase
         print('Epoch loss: {}'.format(epoch_loss))
         model.eval()
         prediction_score = 0
-        for local_valid_batch, local_valid_label in validation_dataloader:
+        stopwatch.start('ValidationEpoch{}'.format(x))
+        for local_valid_batch, local_valid_label in dataLoader['validation']:
             with torch.no_grad():
                 output = model(local_valid_batch)
                 prediction_score += (torch.max(output, 1)[1].data.squeeze() == local_valid_label).sum().item()
-        analyzer.handle_precision_score((prediction_score / len(validation_dataset)),
+        analyzer.handle_precision_score((prediction_score / len(dataLoader['validation'])),
                                         model=model)
+        stopwatch.stop('ValidationEpoch{}'.format(x))
 
     analyzer.print_current_scores()
 
     # Test Phase
+    stopwatch.start('TestPhase')
+
     saved_model = torch.load('./resources/output/model.pt')
     saved_model.eval()
     prediction_list = []
-    for local_valid_batch, local_valid_label in test_dataloader:
+    for local_valid_batch, local_valid_label in dataLoader['test']:
         with torch.no_grad():
             output = saved_model(local_valid_batch)
             prediction_list.append(torch.max(output, 1)[1].numpy()[0])
 
     submission_helper.createSampleSubmissionFile(prediction_list)
 
+    stopwatch.stop('TestPhase')
     # Result Phase
+    stopwatch.stop('Overall')
     print("We are done !")
 
 
