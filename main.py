@@ -11,6 +11,7 @@ import src.yamlConfigConstants as const
 from src.MnistNets import MnistNetV1
 from src.validationHelper import AnalyzingHelper
 from src.Stopwatch import Stopwatch
+from src.EarlyStopHelper import EarlyStopHelper
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -39,8 +40,8 @@ def main():
     model = MnistNetV1(yaml_config[const.DEBUG])
     model.to(device)
     optimizer = optim.Adam(model.parameters(), yaml_config[const.LEARNING_RATE])
-    analyzer = AnalyzingHelper(yaml_config[const.SAVE_MODEL],
-                               'resources/results/v1/model.pt')
+    analyzer = AnalyzingHelper(yaml_config[const.SAVE_MODEL], 'resources/output/model.pt')
+    early_stop_helper = EarlyStopHelper(yaml_config=yaml_config)
     stopwatch.stop('ModelCreationPhase')
     # Training Phase
     print('Beginning Trainings/Validation Phase')
@@ -72,6 +73,8 @@ def main():
                 prediction_score += (torch.max(output, 1)[1].data.squeeze() == local_valid_label).sum().item()
         analyzer.handle_precision_score((prediction_score / len(data_loader['validation'])),
                                         model=model)
+        if early_stop_helper.is_stop(loss_value=epoch_loss):
+            break
         stopwatch.stop('ValidationEpoch{}'.format(x))
 
     analyzer.print_current_scores()
