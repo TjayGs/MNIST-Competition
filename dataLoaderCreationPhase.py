@@ -1,7 +1,7 @@
 from src.MNISTDataset import MNISTDataset
 from torch.utils.data import DataLoader, random_split
 import torchvision.transforms as transforms
-import src.yamlConfigConstants as constant
+import src.config.yamlConfigConstants as constant
 
 train_file_path = './resources/datasets/digit-recognizer/digit-recognizer/train.csv'
 test_file_path = './resources/datasets/digit-recognizer/digit-recognizer/test.csv'
@@ -39,4 +39,10 @@ def dataloader_creation_phase(yaml_config):
     test_dataset = MNISTDataset(test_file_path, with_label=False)
     test_dataloader = DataLoader(test_dataset, batch_size=yaml_config[constant.BATCH_SIZE_TEST])
 
-    return {'test': test_dataloader, 'validation': validation_dataloader, 'train': train_dataloader}
+    dataset_dict = {'test': test_dataloader, 'validation': validation_dataloader, 'train': train_dataloader}
+
+    if yaml_config[constant.DEBUG]:
+        for key in dataset_dict:
+            print("For dataset {} we have {} entities".format(key, len(dataset_dict[key].dataset)))
+
+    return dataset_dict

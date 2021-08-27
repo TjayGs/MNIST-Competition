@@ -1,5 +1,5 @@
 from yaml import load, FullLoader
-import src.yamlConfigConstants as constant
+import src.config.yamlConfigConstants as constant
 
 
 def configPhase():

@@ -7,7 +7,7 @@ import configPhase
 import dataLoaderCreationPhase
 
 import src.submissionHelper as submission_helper
-import src.yamlConfigConstants as const
+import src.config.yamlConfigConstants as const
 from src.MnistNets import MnistNetV1
 from src.validationHelper import AnalyzingHelper
 from src.Stopwatch import Stopwatch

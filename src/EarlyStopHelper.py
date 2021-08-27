@@ -1,4 +1,4 @@
-import yamlConfigConstants as constants
+from src.config import yamlConfigConstants as constants
 
 
 class EarlyStopHelper:
