@@ -40,7 +40,7 @@ def main():
     model.to(device)
     optimizer = optim.Adam(model.parameters(), yaml_config[const.LEARNING_RATE])
     analyzer = AnalyzingHelper(yaml_config[const.SAVE_MODEL],
-                               './resources/output/model.pt')
+                               'resources/results/v1/model.pt')
     stopwatch.stop('ModelCreationPhase')
     # Training Phase
     print('Beginning Trainings/Validation Phase')

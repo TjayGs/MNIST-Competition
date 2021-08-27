@@ -1,0 +1,92 @@
+/home/tjay/PycharmProjects/MNIST-Competition/venv/bin/python /home/tjay/PycharmProjects/MNIST-Competition/main.py
+Here we go !
+Config Phase
+Yaml Config File:
+{'batch_size': 64, 'batch_size_test': 1, 'epochs': 10, 'learning_rate': 0.01, 'debug': True, 'save_model': True}
+Domain ConfigPhase needed 0.0007604599995829631s
+Start creating datasets and dataloaders
+Domain DataLoaderCreationPhase needed 2.5354034930005582s
+Create model and optimizer
+Domain ModelCreationPhase needed 1.5831086380003399s
+Beginning Trainings/Validation Phase
+Beginning Training in Epoch 1
+Shape before conv1 torch.Size([64, 1, 28, 28])
+Shape before conv2 torch.Size([64, 32, 14, 14])
+Shape before view torch.Size([64, 64, 7, 7])
+Shape before linear torch.Size([64, 3136])
+Shape before return torch.Size([64, 3136])
+/home/tjay/PycharmProjects/MNIST-Competition/venv/lib/python3.9/site-packages/torch/nn/functional.py:718: UserWarning: Named tensors and all their associated APIs are an experimental feature and subject to change. Please do not use them for anything important until they are released as stable. (Triggered internally at  /pytorch/c10/core/TensorImpl.h:1156.)
+  return torch.max_pool2d(input, kernel_size, stride, padding, dilation, ceil_mode)
+Domain TrainingEpoch0 needed 1.7621420819996274s
+Current Loss Score: 1963.992919921875
+We've got following precision score: 0.9026190476190477
+We have an higher precision score found with a precision of 0.9026190476190477 > 0
+model will be saved under ./resources/output/model.pt
+Domain ValidationEpoch0 needed 2.5970902480003133s
+Beginning Training in Epoch 2
+Domain TrainingEpoch1 needed 1.7397724869997546s
+Current Loss Score: 250.20175170898438
+We've got following precision score: 0.9427380952380953
+We have an higher precision score found with a precision of 0.9427380952380953 > 0.9026190476190477
+model will be saved under ./resources/output/model.pt
+Domain ValidationEpoch1 needed 2.629813225000362s
+Beginning Training in Epoch 3
+Domain TrainingEpoch2 needed 1.759935210000549s
+Current Loss Score: 199.10174560546875
+We've got following precision score: 0.9342857142857143
+Domain ValidationEpoch2 needed 2.6568256480004493s
+Beginning Training in Epoch 4
+Domain TrainingEpoch3 needed 1.7210653350002758s
+Current Loss Score: 203.9766387939453
+We've got following precision score: 0.9386904761904762
+Domain ValidationEpoch3 needed 2.601925224000297s
+Beginning Training in Epoch 5
+Domain TrainingEpoch4 needed 1.7277981249999357s
+Current Loss Score: 214.83558654785156
+We've got following precision score: 0.9427380952380953
+Domain ValidationEpoch4 needed 2.5268167509993873s
+Beginning Training in Epoch 6
+Domain TrainingEpoch5 needed 1.7185412379994887s
+Current Loss Score: 186.34629821777344
+We've got following precision score: 0.9429761904761905
+We have an higher precision score found with a precision of 0.9429761904761905 > 0.9427380952380953
+model will be saved under ./resources/output/model.pt
+Domain ValidationEpoch5 needed 2.5686796909994882s
+Beginning Training in Epoch 7
+Domain TrainingEpoch6 needed 1.7644360550002602s
+Current Loss Score: 188.6048583984375
+We've got following precision score: 0.9398809523809524
+Domain ValidationEpoch6 needed 2.6043390430004365s
+Beginning Training in Epoch 8
+Domain TrainingEpoch7 needed 1.734263264999754s
+Current Loss Score: 187.1155548095703
+We've got following precision score: 0.9248809523809524
+Domain ValidationEpoch7 needed 2.659431907999533s
+Beginning Training in Epoch 9
+Domain TrainingEpoch8 needed 1.7823989910002638s
+Current Loss Score: 189.3343048095703
+We've got following precision score: 0.934404761904762
+Domain ValidationEpoch8 needed 2.5980104520003806s
+Beginning Training in Epoch 10
+Domain TrainingEpoch9 needed 1.7302962110006774s
+Current Loss Score: 187.642333984375
+We've got following precision score: 0.9346428571428571
+Domain ValidationEpoch9 needed 2.712544056999832s
+The highest achieved precision score was: 0.9429761904761905
+  Epoch    Loss Value
+-------  ------------
+      0      1963.99
+      1       250.202
+      2       199.102
+      3       203.977
+      4       214.836
+      5       186.346
+      6       188.605
+      7       187.116
+      8       189.334
+      9       187.642
+Domain TestPhase needed 8.287440369000251s
+Domain Overall needed 56.2497133450006s
+We are done !
+
+Process finished with exit code 0
